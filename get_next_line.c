@@ -26,7 +26,7 @@ static char	*ft_position_tracker(int fd, char *pPosition)
 			n_bytes = read(fd, p_buffer, BUFFER_SIZE);
 			if (n_bytes > 0)
 			{
-				p_buffer[n_bytes] = '\0';
+				*(p_buffer + n_bytes) = '\0';
 				pPosition = ft_rawline_creator(pPosition, p_buffer);
 			}
 			else if (n_bytes < 0)
@@ -78,8 +78,8 @@ static char	*ft_position_updater(char *pPosition)
 	p_update = NULL;
 	while (*(pPosition + ia) && *(pPosition + ia) != '\n')
 		ia ++;
-	if (!((pPosition[ia] == '\n' && pPosition[ia + 1] == '\0')
-			|| !pPosition[ia]))
+	if (!((*(pPosition + ia) == '\n' && *(pPosition + 1 + ia) == '\0')
+			|| !(*(pPosition + ia))))
 	{
 		p_update = (char *)malloc(sizeof(char)
 				* (ft_strlen(pPosition) - ia + 1));
@@ -88,7 +88,7 @@ static char	*ft_position_updater(char *pPosition)
 			ia ++;
 			while (*(pPosition + ia))
 				p_update[ib ++] = pPosition[ia ++];
-			p_update[ib] = '\0';
+			*(p_update + ib) = '\0';
 		}
 	}
 	ft_memliberator(&pPosition);
