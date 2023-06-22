@@ -16,10 +16,12 @@
 # include <unistd.h>
 # include <stdlib.h>
 
+//windowing constant
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 42
 # endif
 
+//upper limit
 # ifndef MAX_PAGE
 #  define MAX_PAGE 1024
 # endif

@@ -12,6 +12,10 @@
 
 #include "get_next_line.h"
 
+//"ft_position_tracker" is a function that captures all the content of the File
+// Descriptor from the last performed reading position up to the last window of
+// the reading loop where it detects the first line break or reaches the end of
+// the file.
 static char	*ft_position_tracker(int fd, char *pPosition)
 {
 	char	*p_buffer;
@@ -39,6 +43,9 @@ static char	*ft_position_tracker(int fd, char *pPosition)
 	return (pPosition);
 }
 
+//"ft_position_tracker" is a function that filters the bytes read from the last
+// updated reading position of the File Descriptor until the first line break
+// or null character.
 static char	*ft_line_processor(char *pPosition)
 {
 	int		ia;
@@ -67,6 +74,11 @@ static char	*ft_line_processor(char *pPosition)
 	return (p_clean);
 }
 
+//"ft_position_updater" is a function that updates the reading position of
+// the File Descriptor based on the last detected line break. It stores
+// the updated position in a static pointer and takes into account
+// the remaining windowing offset for the next execution of the "get_next_line"
+// function.
 static char	*ft_position_updater(char *pPosition)
 {
 	int		ia;
@@ -95,6 +107,11 @@ static char	*ft_position_updater(char *pPosition)
 	return (p_update);
 }
 
+//"get_next_line" is the primary function from which the reading position of
+// the incoming File Descriptor is located and updated. It follows a
+// step-by-step process to capture the content up to the next line break and
+// returns it. Additionally, it ensures that the reading position is properly
+// updated after encountering the last line break, if required.
 char	*get_next_line(int fd)
 {
 	char			*p_line;
