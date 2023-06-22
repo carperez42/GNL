@@ -19,6 +19,12 @@ size_t	ft_strlen(const char *sOri)
 	return (0);
 }
 
+void	ft_memliberator(char **pMemory)
+{
+	free(*pMemory);
+	*pMemory = NULL;
+}
+
 void	*ft_memcpy(void *sDest, const void *sOri, size_t nChg)
 {
 	size_t	ia;
@@ -37,14 +43,14 @@ void	*ft_memcpy(void *sDest, const void *sOri, size_t nChg)
 
 char	*ft_linebreak_finder(const char *sOri)
 {
-	while (sOri && *sOri != '\0' &&  *sOri != '\n')
+	while (sOri && *sOri != '\0' && *sOri != '\n')
 		sOri ++;
 	if (sOri && *sOri == '\n')
 		return ((char *) sOri);
 	return (NULL);
 }
 
-char	*ft_rawline_creator(char const *sFront, char const *sBack)
+char	*ft_rawline_creator(char *sFront, char const *sBack)
 {
 	char	*p_new;
 	int		l_front;
@@ -66,8 +72,9 @@ char	*ft_rawline_creator(char const *sFront, char const *sBack)
 			ft_memcpy(p_new, sFront, l_front);
 			ft_memcpy(&p_new[l_front], sBack, l_back + 1);
 		}
-		free ((char *)sFront);
+		ft_memliberator(&sFront);
 	}
 	return (p_new);
 }
 
+//END

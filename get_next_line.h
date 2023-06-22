@@ -22,9 +22,9 @@
 # endif
 
 char	*get_next_line(int fd);
-
 size_t	ft_strlen(const char *sOri);
+void	ft_memliberator(char **pMemory);
 void	*ft_memcpy(void *sDest, const void *sOri, size_t nChg);
 char	*ft_linebreak_finder(const char *sOri);
-char	*ft_rawline_creator(char const *sStack, char const *sAdd);
+char	*ft_rawline_creator(char *sFront, char const *sBack);
 #endif

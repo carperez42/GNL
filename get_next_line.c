@@ -12,7 +12,7 @@
 
 #include "get_next_line.h"
 
-static int	ft_position_tracker(int fd, char **pPosition)
+static char	*ft_position_tracker(int fd, char *pPosition)
 {
 	char	*p_buffer;
 	int		n_bytes;
@@ -20,22 +20,23 @@ static int	ft_position_tracker(int fd, char **pPosition)
 	p_buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (p_buffer)
 	{
-		while (!ft_linebreak_finder(*pPosition) && n_bytes > 0)
+		n_bytes = 1;
+		while (!ft_linebreak_finder(pPosition) && n_bytes > 0)
 		{
 			n_bytes = read(fd, p_buffer, BUFFER_SIZE);
 			if (n_bytes > 0)
 			{
 				p_buffer[n_bytes] = '\0';
-				*pPosition = ft_rawline_creator(*pPosition, p_buffer);
+				pPosition = ft_rawline_creator(pPosition, p_buffer);
 			}
 			else if (n_bytes < 0)
-				*pPosition = NULL;
+				ft_memliberator(&pPosition);
 		}
-		free (p_buffer);
+		ft_memliberator(&p_buffer);
 	}
 	else
-		*pPosition = NULL;
-	return (n_bytes);
+		pPosition = NULL;
+	return (pPosition);
 }
 
 static char	*ft_line_processor(char *pPosition)
@@ -66,7 +67,7 @@ static char	*ft_line_processor(char *pPosition)
 	return (p_clean);
 }
 
-static char	*ft_position_updater(char *pPosition, int fEnd)
+static char	*ft_position_updater(char *pPosition)
 {
 	int		ia;
 	int		ib;
@@ -75,10 +76,11 @@ static char	*ft_position_updater(char *pPosition, int fEnd)
 	ia = 0;
 	ib = 0;
 	p_update = NULL;
-	if (fEnd)
+	while (*(pPosition + ia) && *(pPosition + ia) != '\n')
+		ia ++;
+	if (!((pPosition[ia] == '\n' && pPosition[ia + 1] == '\0')
+			|| !pPosition[ia]))
 	{
-		while (*(pPosition + ia) && *(pPosition + ia) != '\n')
-			ia ++;
 		p_update = (char *)malloc(sizeof(char)
 				* (ft_strlen(pPosition) - ia + 1));
 		if (p_update)
@@ -89,26 +91,26 @@ static char	*ft_position_updater(char *pPosition, int fEnd)
 			p_update[ib] = '\0';
 		}
 	}
-	free (pPosition);
+	ft_memliberator(&pPosition);
 	return (p_update);
 }
 
 char	*get_next_line(int fd)
 {
-	int				f_end;
 	char			*p_line;
 	static char		*p_position;
 
-	f_end = 1;
 	p_line = NULL;
 	if (fd >= 0 && BUFFER_SIZE > 0)
 	{
-		f_end = ft_position_tracker(fd, &p_position);
+		p_position = ft_position_tracker(fd, p_position);
 		if (p_position)
 		{
 			p_line = ft_line_processor(p_position);
-			p_position = ft_position_updater(p_position, f_end);
+			p_position = ft_position_updater(p_position);
 		}
 	}
 	return (p_line);
 }
+
+//END
