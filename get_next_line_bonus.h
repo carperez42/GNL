@@ -30,6 +30,6 @@ char	*get_next_line(int fd);
 size_t	ft_strlen(const char *sOri);
 void	ft_memliberator(char **pMemory);
 void	*ft_memcpy(void *sDest, const void *sOri, size_t nChg);
-char	*ft_linebreak_finder(const char *sOri);
-char	*ft_rawline_creator(char *sFront, char const *sBack);
+char	*ft_linebreak_finder(const char *sMainbuff);
+char	*ft_rawline_creator(char *sMainbuff, char const *sWindow);
 #endif

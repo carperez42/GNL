@@ -19,6 +19,8 @@ size_t	ft_strlen(const char *sOri)
 	return (0);
 }
 
+//"ft_memliberator" This function frees dynamically allocated memory during
+// program execution and initializes the associated header pointer to NULL.
 void	ft_memliberator(char **pMemory)
 {
 	free(*pMemory);
@@ -41,40 +43,45 @@ void	*ft_memcpy(void *sDest, const void *sOri, size_t nChg)
 	return (sDest);
 }
 
-char	*ft_linebreak_finder(const char *sOri)
+//"ft_linebreak_finder" This function checks if the buffer, which it reads from
+// the File Descriptor, contains any line breaks.
+char	*ft_linebreak_finder(const char *sMainbuff)
 {
-	while (sOri && *sOri != '\0' && *sOri != '\n')
-		sOri ++;
-	if (sOri && *sOri == '\n')
-		return ((char *) sOri);
+	while (sMainbuff && *sMainbuff != '\0' && *sMainbuff != '\n')
+		sMainbuff ++;
+	if (sMainbuff && *sMainbuff == '\n')
+		return ((char *) sMainbuff);
 	return (NULL);
 }
 
-char	*ft_rawline_creator(char *sFront, char const *sBack)
+//"ft_rawline_creator" This function accumulates in the buffer, which it reads
+// from the File Descriptor, the new information extracted from the last read
+// window.
+char	*ft_rawline_creator(char *sMainbuff, char const *sWindow)
 {
-	char	*p_new;
+	char	*p_newbuff;
 	int		l_front;
 	int		l_back;
 
-	p_new = NULL;
-	if (sFront)
-		l_front = ft_strlen(sFront);
+	p_newbuff = NULL;
+	if (sMainbuff)
+		l_front = ft_strlen(sMainbuff);
 	else
 		l_front = 0;
-	l_back = ft_strlen(sBack);
-	p_new = malloc (sizeof(char) * (l_front + l_back + 1));
-	if (p_new != NULL)
+	l_back = ft_strlen(sWindow);
+	p_newbuff = malloc (sizeof(char) * (l_front + l_back + 1));
+	if (p_newbuff != NULL)
 	{
 		if (l_front == 0)
-			ft_memcpy(p_new, sBack, l_back + 1);
+			ft_memcpy(p_newbuff, sWindow, l_back + 1);
 		else
 		{
-			ft_memcpy(p_new, sFront, l_front);
-			ft_memcpy(&p_new[l_front], sBack, l_back + 1);
+			ft_memcpy(p_newbuff, sMainbuff, l_front);
+			ft_memcpy(&p_newbuff[l_front], sWindow, l_back + 1);
 		}
-		ft_memliberator(&sFront);
+		ft_memliberator(&sMainbuff);
 	}
-	return (p_new);
+	return (p_newbuff);
 }
 
 //END

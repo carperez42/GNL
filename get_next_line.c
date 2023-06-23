@@ -12,99 +12,99 @@
 
 #include "get_next_line.h"
 
-//"ft_position_tracker" is a function that captures all the content of the File
-// Descriptor from the last performed reading position up to the last window of
-// the reading loop where it detects the first line break or reaches the end of
-// the file.
-static char	*ft_position_tracker(int fd, char *pPosition)
+//"ft_position_tracker" This function reads from the File Descriptor as many
+// times as necessary if the read window is smaller than its maximum size,
+// until it finds the first newline or reaches the end of the file. For each
+// new read, it accumulates the newly read information in the buffer.
+static char	*ft_position_tracker(int fd, char *pMainbuff)
 {
-	char	*p_buffer;
+	char	*p_auxbuff;
 	int		n_bytes;
 
-	p_buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (p_buffer)
+	p_auxbuff = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (p_auxbuff)
 	{
 		n_bytes = 1;
-		while (!ft_linebreak_finder(pPosition) && n_bytes > 0)
+		while (!ft_linebreak_finder(pMainbuff) && n_bytes > 0)
 		{
-			n_bytes = read(fd, p_buffer, BUFFER_SIZE);
+			n_bytes = read(fd, p_auxbuff, BUFFER_SIZE);
 			if (n_bytes > 0)
 			{
-				*(p_buffer + n_bytes) = '\0';
-				pPosition = ft_rawline_creator(pPosition, p_buffer);
+				*(p_auxbuff + n_bytes) = '\0';
+				pMainbuff = ft_rawline_creator(pMainbuff, p_auxbuff);
 			}
 			else if (n_bytes < 0)
-				ft_memliberator(&pPosition);
+				ft_memliberator(&pMainbuff);
 		}
-		ft_memliberator(&p_buffer);
+		ft_memliberator(&p_auxbuff);
 	}
 	else
-		pPosition = NULL;
-	return (pPosition);
+		pMainbuff = NULL;
+	return (pMainbuff);
 }
 
-//"ft_position_tracker" is a function that filters the bytes read from the last
+//"ft_position_tracker" this function filters the bytes read from the last
 // updated reading position of the File Descriptor until the first line break
 // or null character.
-static char	*ft_line_processor(char *pPosition)
+static char	*ft_line_processor(char *pMainbuff)
 {
 	int		ia;
-	char	*p_clean;
+	char	*p_line;
 
 	ia = 0;
-	p_clean = NULL;
-	while (*(pPosition + ia) && *(pPosition + ia) != '\n')
+	p_line = NULL;
+	while (*(pMainbuff + ia) && *(pMainbuff + ia) != '\n')
 		ia ++;
-	p_clean = (char *)malloc(sizeof(char) * (ia + 2));
-	if (p_clean)
+	p_line = (char *)malloc(sizeof(char) * (ia + 2));
+	if (p_line)
 	{
 		ia = 0;
-		while (*(pPosition + ia) && *(pPosition + ia) != '\n')
+		while (*(pMainbuff + ia) && *(pMainbuff + ia) != '\n')
 		{
-			*(p_clean + ia) = *(pPosition + ia);
+			*(p_line + ia) = *(pMainbuff + ia);
 			ia ++;
 		}
-		if (*(pPosition + ia) == '\n')
+		if (*(pMainbuff + ia) == '\n')
 		{
-			*(p_clean + ia) = '\n';
+			*(pMainbuff + ia) = '\n';
 			ia ++;
 		}
-		*(p_clean + ia) = '\0';
+		*(p_line + ia) = '\0';
 	}
-	return (p_clean);
+	return (p_line);
 }
 
-//"ft_position_updater" is a function that updates the reading position of
+//"ft_position_updater" this function updates the reading position of
 // the File Descriptor based on the last detected line break. It stores
 // the updated position in a static pointer and takes into account
 // the remaining windowing offset for the next execution of the "get_next_line"
 // function.
-static char	*ft_position_updater(char *pPosition)
+static char	*ft_position_updater(char *pMainbuff)
 {
 	int		ia;
 	int		ib;
-	char	*p_update;
+	char	*p_fdspots;
 
 	ia = 0;
 	ib = 0;
-	p_update = NULL;
-	while (*(pPosition + ia) && *(pPosition + ia) != '\n')
+	p_fdspots = NULL;
+	while (*(pMainbuff + ia) && *(pMainbuff + ia) != '\n')
 		ia ++;
-	if (!((*(pPosition + ia) == '\n' && *(pPosition + 1 + ia) == '\0')
-			|| !(*(pPosition + ia))))
+	if (!((*(pMainbuff + ia) == '\n' && *(pMainbuff + 1 + ia) == '\0')
+			|| !(*(pMainbuff + ia))))
 	{
-		p_update = (char *)malloc(sizeof(char)
-				* (ft_strlen(pPosition) - ia + 1));
-		if (p_update)
+		p_fdspots = (char *)malloc(sizeof(char)
+				* (ft_strlen(pMainbuff) - ia + 1));
+		if (p_fdspots)
 		{
 			ia ++;
-			while (*(pPosition + ia))
-				p_update[ib ++] = pPosition[ia ++];
-			*(p_update + ib) = '\0';
+			while (*(pMainbuff + ia))
+				p_fdspots[ib ++] = pMainbuff[ia ++];
+			*(p_fdspots + ib) = '\0';
 		}
 	}
-	ft_memliberator(&pPosition);
-	return (p_update);
+	ft_memliberator(&pMainbuff);
+	return (p_fdspots);
 }
 
 //"get_next_line" is the primary function from which the reading position of
@@ -114,20 +114,20 @@ static char	*ft_position_updater(char *pPosition)
 // updated after encountering the last line break, if required.
 char	*get_next_line(int fd)
 {
-	char			*p_line;
-	static char		*p_position;
+	char			*p_newline;
+	static char		*p_fdspot;
 
-	p_line = NULL;
+	p_newline = NULL;
 	if (fd >= 0 && BUFFER_SIZE > 0)
 	{
-		p_position = ft_position_tracker(fd, p_position);
-		if (p_position)
+		p_fdspot = ft_position_tracker(fd, p_fdspot);
+		if (p_fdspot)
 		{
-			p_line = ft_line_processor(p_position);
-			p_position = ft_position_updater(p_position);
+			p_newline = ft_line_processor(p_fdspot);
+			p_fdspot = ft_position_updater(p_fdspot);
 		}
 	}
-	return (p_line);
+	return (p_newline);
 }
 
 //END
