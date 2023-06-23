@@ -66,7 +66,7 @@ static char	*ft_line_processor(char *pMainbuff)
 		}
 		if (*(pMainbuff + ia) == '\n')
 		{
-			*(pMainbuff + ia) = '\n';
+			*(p_line + ia) = '\n';
 			ia ++;
 		}
 		*(p_line + ia) = '\0';
