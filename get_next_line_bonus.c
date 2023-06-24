@@ -39,7 +39,7 @@ static char	*ft_position_tracker(int fd, char *pMainbuff)
 		ft_memliberator(&p_auxbuff);
 	}
 	else
-		pMainbuff = NULL;
+		ft_memliberator(&pMainbuff);
 	return (pMainbuff);
 }
 
@@ -55,7 +55,9 @@ static char	*ft_line_processor(char *pMainbuff)
 	p_line = NULL;
 	while (*(pMainbuff + ia) && *(pMainbuff + ia) != '\n')
 		ia ++;
-	p_line = (char *)malloc(sizeof(char) * (ia + 2));
+	if (*(pMainbuff + ia) == '\n')
+		ia ++;
+	p_line = (char *)malloc(sizeof(char) * (ia + 1));
 	if (p_line)
 	{
 		ia = 0;
@@ -65,10 +67,7 @@ static char	*ft_line_processor(char *pMainbuff)
 			ia ++;
 		}
 		if (*(pMainbuff + ia) == '\n')
-		{
-			*(p_line + ia) = '\n';
-			ia ++;
-		}
+			p_line[ia ++] = '\n';
 		*(p_line + ia) = '\0';
 	}
 	return (p_line);
