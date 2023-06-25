@@ -5,6 +5,7 @@
 *.a
 *.txt
 .DS_Store
+main*
 *.PNG
 *.png
 util*
